@@ -29,6 +29,9 @@ class _ExpenseState extends State<Expenses> {
     )
   ];
 
+  bool _isDarkMode = false;
+
+
   void _openAddExpenseOverlay(){
     showModalBottomSheet(
       context: context,
@@ -41,6 +44,7 @@ class _ExpenseState extends State<Expenses> {
     setState(() {
       _registeredExpenses.remove(expense);
     });
+    ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           duration: const Duration(seconds: 3) ,
@@ -62,6 +66,12 @@ class _ExpenseState extends State<Expenses> {
     });
   }
 
+  void _toggleDarkMode() {
+    setState(() {
+      _isDarkMode = !_isDarkMode;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget mainContent = const Center(
@@ -72,22 +82,45 @@ class _ExpenseState extends State<Expenses> {
           expenses: _registeredExpenses,
           onRemoveExpense: _removeExpense,);
     }
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Flutter Expense Tracker",
-        style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
+    return MaterialApp(
+        theme: ThemeData.light().copyWith(
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.black,
+            titleTextStyle: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+            iconTheme: IconThemeData(color: Colors.white),
           ),
         ),
-
-        actions: [
-          IconButton(
-              onPressed: _openAddExpenseOverlay,
-              icon: const Icon(Icons.add),
+      darkTheme: ThemeData.dark().copyWith(
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.white, // White background in dark mode
+          titleTextStyle: TextStyle(
+            color: Colors.black, // Black text in dark mode
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
           ),
-        ],
+          iconTheme: IconThemeData(color: Colors.black), // Black icons in dark mode
+        ),
       ),
+      themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      home: Scaffold(
+        appBar: AppBar(
+          foregroundColor: Colors.black,
+          title: const Text("Flutter Expense Tracker"),
+          actions: [
+            IconButton(
+                onPressed: _openAddExpenseOverlay,
+                icon: const Icon(Icons.add),
+            ),
+            IconButton(
+              icon: Icon(_isDarkMode ? Icons.dark_mode : Icons.light_mode),
+              onPressed: _toggleDarkMode,
+            ),
+          ],
+        ),
       body: Column(
         children: [
           const Text('The Chart'),
@@ -95,6 +128,7 @@ class _ExpenseState extends State<Expenses> {
               child: mainContent,
           ),
         ],
+      ),
       ),
     );
   }
