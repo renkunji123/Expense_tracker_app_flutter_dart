@@ -12,6 +12,7 @@ class Expenses extends StatefulWidget{
     return _ExpenseState();
   }
 }
+
 class _ExpenseState extends State<Expenses> {
   final List<Expense> _registeredExpenses = [
     Expense(
@@ -34,6 +35,13 @@ class _ExpenseState extends State<Expenses> {
         builder: (ctx) =>  NewExpense(onAddExpense: _addExpense,),
     );
   }
+
+  void _removeExpense(Expense expense) {
+    setState(() {
+      _registeredExpenses.remove(expense);
+    });
+  }
+
   void _addExpense(Expense expense) {
     setState(() {
       _registeredExpenses.add(expense);
@@ -56,14 +64,17 @@ class _ExpenseState extends State<Expenses> {
               onPressed: _openAddExpenseOverlay,
               icon: const Icon(Icons.add),
           ),
-
         ],
       ),
       body: Column(
         children: [
           const Text('The Chart'),
-          Expanded(child:
-          ExpensesList(expenses: _registeredExpenses),)
+          Expanded(
+              child: ExpensesList(
+              expenses: _registeredExpenses,
+              onRemoveExpense: _removeExpense,
+              ),
+          ),
         ],
       ),
     );
